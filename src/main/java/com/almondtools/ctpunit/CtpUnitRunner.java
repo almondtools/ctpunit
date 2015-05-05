@@ -31,9 +31,10 @@ import com.almondtools.comtemplate.engine.ConstantDefinition;
 import com.almondtools.comtemplate.engine.DefaultErrorHandler;
 import com.almondtools.comtemplate.engine.ResolverRegistry;
 import com.almondtools.comtemplate.engine.Scope;
+import com.almondtools.comtemplate.engine.TemplateEventNotifier;
 import com.almondtools.comtemplate.engine.TemplateGroup;
 import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
-import com.almondtools.comtemplate.engine.TemplateInterpreter;
+import com.almondtools.comtemplate.engine.TemplateLoader;
 import com.almondtools.comtemplate.engine.expressions.ErrorExpression;
 import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
 
@@ -41,15 +42,19 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 
 	private static final String TEST = "test";
 
-	private ClassPathTemplateLoader loader;
+	private CtpUnitCoverageCompiler compiler;
+	private TemplateLoader loader;
 	private CtpUnitMatchers matchers;
-	private TemplateInterpreter interpreter;
+	private TemplateEventNotifier interpreter;
+
 
 	public CtpUnitRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
-		loader = new ClassPathTemplateLoader();
+		compiler = new CtpUnitCoverageCompiler();
+		loader = new ClassPathTemplateLoader(compiler);
 		matchers = matchers(testClass);
-		interpreter = new TemplateInterpreter(resolvers(matchers), defaultTemplates(), new DefaultErrorHandler());
+		interpreter = new TemplateEventNotifier(resolvers(matchers), defaultTemplates(), new DefaultErrorHandler());
+		interpreter.addListener(compiler);;
 	}
 
 	public CtpUnitMatchers matchers(Class<?> testClass) throws InitializationError {
@@ -121,6 +126,12 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 				notifier.fireTestFailure(error(description, child));
 			}
 		}
+	}
+	
+	@Override
+	public void run(RunNotifier notifier) {
+		super.run(notifier);
+		compiler.dumpCoverage();
 	}
 
 	public Failure failure(Description description, String message) {
