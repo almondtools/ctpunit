@@ -29,15 +29,22 @@ public class TokenInterval {
 
 	@Override
 	public String toString() {
-		return position(start) + " - " + position(stop);
+		return position() + " - " + endPosition();
 	}
 
-	public String position(Token token) {
+	public String position() {
 		return new StringBuilder()
-			.append(token.getLine())
+			.append(start.getLine())
 			.append(':')
-			.append(token.getCharPositionInLine())
+			.append(start.getCharPositionInLine() + 1)
 			.toString();
 	}
 
+	public String endPosition() {
+		return new StringBuilder()
+			.append(stop.getLine())
+			.append(':')
+			.append(stop.getCharPositionInLine() + 2)
+			.toString();
+	}
 }

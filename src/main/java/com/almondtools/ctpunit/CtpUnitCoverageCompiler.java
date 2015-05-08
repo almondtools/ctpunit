@@ -1,12 +1,14 @@
 package com.almondtools.ctpunit;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -22,6 +24,8 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.junit.runner.Result;
+import org.junit.runner.notification.RunListener;
 
 import com.almondtools.comtemplate.engine.InterpreterListener;
 import com.almondtools.comtemplate.engine.TemplateCompiler;
@@ -45,18 +49,18 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 		this.coverage = new LinkedHashSet<>();
 	}
 
-	public void dumpCoverage() {
+	public void dumpCoverage(PrintWriter writer) {
 		for (String group : getGroupsInScope()) {
 			List<TokenInterval> covered = getCovered(group);
 			List<TokenInterval> uncovered = getUncovered(group);
-			System.out.println(group);
-			System.out.println("covered\n" + covered.stream()
-				.map(TokenInterval::toString)
-				.collect(joining("\n\t","\t","")));
-			System.out.println("uncovered\n" + uncovered.stream()
-				.map(TokenInterval::toString)
-				.collect(joining("\n\t","\t","")));
+			for (TokenInterval c : covered) {
+				writer.println(Stream.of(group, "+", c.toString()).collect(joining("\t")));
+			}
+			for (TokenInterval c : uncovered) {
+				writer.println(Stream.of(group, "-", c.toString()).collect(joining("\t")));
+			}
 		}
+		writer.flush();
 	}
 
 	public List<TokenInterval> getUncovered(String group) {
@@ -89,7 +93,7 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 			.filter(Objects::nonNull)
 			.flatMap(tokenInterval -> Stream.of(tokenInterval.getStart(), tokenInterval.getStop()))
 			.distinct()
-			.collect(toMap(token -> token.getTokenIndex(), token -> token));
+			.collect(groupingBy(token -> token.getTokenIndex(), reducing(null, (oldToken, newToken) -> oldToken == null ? newToken : oldToken)));
 	}
 
 	public IntervalSet intervals(Set<TemplateExpression> expressions) {
@@ -139,6 +143,15 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 			} else {
 				return Stream.concat(existing.stream(), Stream.of(expr))
 					.collect(toSet());
+			}
+		};
+	}
+
+	public RunListener coverageListener() {
+		return new RunListener() {
+			@Override
+			public void testRunFinished(Result result) throws Exception {
+				dumpCoverage(new PrintWriter(System.out));
 			}
 		};
 	}

@@ -5,14 +5,11 @@ import org.junit.runner.RunWith;
 import com.almondtools.ctpunit.CtpUnitRunner.Spec;
 
 @RunWith(CtpUnitRunner.class)
-public class TestSuccessFailing {
+@Spec(group="success")
+public class TestSuccess {
 
-	@Spec(group="success")
+	@Spec
 	public void success() {
-	}
-	
-	@Spec(group="failing")
-	public void failing() {
 	}
 	
 }

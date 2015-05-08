@@ -42,7 +42,8 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 
 	private static final String TEST = "test";
 
-	private CtpUnitCoverageCompiler compiler;
+	private static ThreadLocal<CtpUnitCoverageCompiler> compiler = ThreadLocal.withInitial(CtpUnitCoverageCompiler::new);
+	
 	private TemplateLoader loader;
 	private CtpUnitMatchers matchers;
 	private TemplateEventNotifier interpreter;
@@ -50,11 +51,10 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 
 	public CtpUnitRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
-		compiler = new CtpUnitCoverageCompiler();
-		loader = new ClassPathTemplateLoader(compiler);
+		loader = new ClassPathTemplateLoader(compiler.get());
 		matchers = matchers(testClass);
 		interpreter = new TemplateEventNotifier(resolvers(matchers), defaultTemplates(), new DefaultErrorHandler());
-		interpreter.addListener(compiler);;
+		interpreter.addListener(compiler.get());
 	}
 
 	public CtpUnitMatchers matchers(Class<?> testClass) throws InitializationError {
@@ -77,7 +77,7 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 		resolvers.register(TemplateImmediateExpression.class, matchers);
 		return resolvers;
 	}
-
+	
 	@Override
 	protected List<ConstantDefinition> getChildren() {
 		List<ConstantDefinition> children = new ArrayList<ConstantDefinition>();
@@ -93,6 +93,12 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 	@Override
 	protected Description describeChild(ConstantDefinition child) {
 		return Description.createTestDescription(getTestClass().getJavaClass(), child.getGroup().getName() + "." + child.getName());
+	}
+	
+	@Override
+	public void run(RunNotifier notifier) {
+		notifier.addListener(compiler.get().coverageListener());
+		super.run(notifier);
 	}
 
 	@Override
@@ -128,12 +134,6 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 		}
 	}
 	
-	@Override
-	public void run(RunNotifier notifier) {
-		super.run(notifier);
-		compiler.dumpCoverage();
-	}
-
 	public Failure failure(Description description, String message) {
 		return new Failure(description, new AssertionError(message));
 	}
