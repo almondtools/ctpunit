@@ -1,5 +1,5 @@
 html(content) ::= {
-<html>@content</html>
+<html>`content`</html>
 }
 
 test1 ::= html("content").equalTo("<html>\ncontent</html>").fails()
