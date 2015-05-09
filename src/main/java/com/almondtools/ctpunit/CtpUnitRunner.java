@@ -96,12 +96,6 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 	}
 	
 	@Override
-	public void run(RunNotifier notifier) {
-		notifier.addListener(compiler.get().coverageListener());
-		super.run(notifier);
-	}
-
-	@Override
 	protected void runChild(ConstantDefinition child, RunNotifier notifier) {
 		Description description = describeChild(child);
 		notifier.fireTestStarted(description);
@@ -181,13 +175,13 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE, ElementType.METHOD })
-	@interface Spec {
+	public @interface Spec {
 		String group() default "";
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE })
-	@interface Matcher {
+	public @interface Matcher {
 		Class<? extends FunctionMatcher>[] value();
 	}
 

@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,8 +23,6 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.runner.Result;
-import org.junit.runner.notification.RunListener;
 
 import com.almondtools.comtemplate.engine.InterpreterListener;
 import com.almondtools.comtemplate.engine.TemplateCompiler;
@@ -41,12 +38,19 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 
 	private Map<TemplateExpression, TokenInterval> locations;
 	private Map<String, Set<TemplateExpression>> coverableByGroup;
-	private Set<TemplateExpression> coverage;
+	private Map<TemplateExpression, Boolean> coverage;
 
 	public CtpUnitCoverageCompiler() {
 		this.locations = new IdentityHashMap<>();
 		this.coverableByGroup = new LinkedHashMap<>();
-		this.coverage = new LinkedHashSet<>();
+		this.coverage = new IdentityHashMap<>();
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				dumpCoverage(new PrintWriter(System.out));
+			}
+		}));
 	}
 
 	public void dumpCoverage(PrintWriter writer) {
@@ -64,8 +68,9 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 	}
 
 	public List<TokenInterval> getUncovered(String group) {
-		Set<TemplateExpression> uncovered = new LinkedHashSet<>(coverableByGroup.get(group));
-		uncovered.removeAll(coverage);
+		List<TemplateExpression> uncovered = coverableByGroup.get(group).stream()
+			.filter(expr -> !coverage.containsKey(expr))
+			.collect(toList());
 
 		Map<Integer, Token> tokens = tokens(uncovered);
 		IntervalSet intervals = intervals(uncovered);
@@ -76,8 +81,9 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 	}
 
 	public List<TokenInterval> getCovered(String group) {
-		Set<TemplateExpression> covered = new LinkedHashSet<>(coverableByGroup.get(group));
-		covered.retainAll(coverage);
+		List<TemplateExpression> covered = coverableByGroup.get(group).stream()
+			.filter(expr -> coverage.containsKey(expr))
+			.collect(toList());
 
 		Map<Integer, Token> tokens = tokens(covered);
 		IntervalSet intervals = intervals(covered);
@@ -87,7 +93,7 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 			.collect(toList());
 	}
 
-	public Map<Integer, Token> tokens(Set<TemplateExpression> expressions) {
+	public Map<Integer, Token> tokens(List<TemplateExpression> expressions) {
 		return expressions.stream()
 			.map(expr -> locations.get(expr))
 			.filter(Objects::nonNull)
@@ -96,7 +102,7 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 			.collect(groupingBy(token -> token.getTokenIndex(), reducing(null, (oldToken, newToken) -> oldToken == null ? newToken : oldToken)));
 	}
 
-	public IntervalSet intervals(Set<TemplateExpression> expressions) {
+	public IntervalSet intervals(List<TemplateExpression> expressions) {
 		return expressions.stream()
 			.map(expr -> locations.get(expr))
 			.filter(Objects::nonNull)
@@ -132,7 +138,7 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 
 	@Override
 	public void notify(TemplateExpression source, TemplateImmediateExpression result) {
-		coverage.add(source);
+		coverage.put(source, true);
 	}
 
 	private BiFunction<String, Set<TemplateExpression>, Set<TemplateExpression>> mergeCoverage(TemplateExpression expr) {
@@ -143,15 +149,6 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 			} else {
 				return Stream.concat(existing.stream(), Stream.of(expr))
 					.collect(toSet());
-			}
-		};
-	}
-
-	public RunListener coverageListener() {
-		return new RunListener() {
-			@Override
-			public void testRunFinished(Result result) throws Exception {
-				dumpCoverage(new PrintWriter(System.out));
 			}
 		};
 	}
