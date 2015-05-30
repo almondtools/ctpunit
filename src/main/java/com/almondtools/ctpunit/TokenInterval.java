@@ -44,7 +44,7 @@ public class TokenInterval {
 		return new StringBuilder()
 			.append(stop.getLine())
 			.append(':')
-			.append(stop.getCharPositionInLine() + 2)
+			.append(stop.getCharPositionInLine() + stop.getText().length() + 1 )
 			.toString();
 	}
 }

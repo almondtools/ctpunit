@@ -3,4 +3,3 @@ html(content) ::= {
 }
 
 test1 ::= html("content").equalTo("<html>content</html>")
-}
