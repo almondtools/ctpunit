@@ -34,11 +34,11 @@ CtpUnit provides some Standard Matchers for testing:
 
 ### equalTo
 
-The `equalTo` matcher returns **success** if the base and the argument are textually equal. In general this is whitespace-sensitive, yet the first and last newline get cut.   
+The `equalTo` matcher returns **success** if the base and the argument are literally equal. In general this is whitespace-sensitive, yet the first and last newline get cut.   
 
 ### evaluatesTo
 
-The `equalTo` matcher returns **success** if the base and the argument are textually equivalent. This means that whitespace is compressed and trimmed:
+The `evaluatesTo` matcher returns **success** if the base and the argument are equivalent contents. This means that whitespace is compressed and trimmed:
 
 - inner whitespace sequences are reduces to `' '`
 - leading and trailing whitespace sequences are trimmed
