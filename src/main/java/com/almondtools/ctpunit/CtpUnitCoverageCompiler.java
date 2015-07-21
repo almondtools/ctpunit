@@ -152,5 +152,4 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 			}
 		};
 	}
-
 }
