@@ -60,7 +60,6 @@ A developer can write custom Matchers by extending the class `FunctionMatcher` a
 
 ## Planned Features
 
-- elimination of Helper
 - more matchers
 
 
