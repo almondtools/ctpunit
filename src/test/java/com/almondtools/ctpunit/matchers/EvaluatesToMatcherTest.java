@@ -25,34 +25,34 @@ import com.almondtools.ctpunit.Status;
 
 public class EvaluatesToMatcherTest {
 
-	private EvaluatesToMatcher resolver;
+	private EvaluatesToMatcher matcher;
 
 	@Before
 	public void before() {
-		resolver = new EvaluatesToMatcher();
+		matcher = new EvaluatesToMatcher();
 	}
 
 	@Test
 	public void testSuccess() throws Exception {
 		Scope scope = mock(Scope.class);
 
-		assertThat(resolver.resolveResult(string("abc"), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
-		assertThat(resolver.resolveResult(string("abc"), asList(string(" abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
-		assertThat(resolver.resolveResult(string("abc"), asList(string("abc ")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
-		assertThat(resolver.resolveResult(string(" abc"), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
-		assertThat(resolver.resolveResult(string("abc "), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
-		assertThat(resolver.resolveResult(string("a b  c"), asList(string("a b c")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
-		assertThat(resolver.resolveResult(string(" a \nb\t c\r"), asList(string("a b c")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(string("abc"), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(string("abc"), asList(string(" abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(string("abc"), asList(string("abc ")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(string(" abc"), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(string("abc "), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(string("a b  c"), asList(string("a b c")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(string(" a \nb\t c\r"), asList(string("a b c")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
 	}
 
 	@Test
 	public void testFailure() throws Exception {
 		Scope scope = mock(Scope.class);
 
-		assertThat(resolver.resolveResult(string("abc"), asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
-		assertThat(resolver.resolveResult(string("abc"), asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), equalTo("expected normalized form <xyz>, but was <abc>"));
-		assertThat(resolver.resolveResult(string(" a \nb\t c\r"), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
-		assertThat(resolver.resolveResult(string(" a \nb\t c\r"), asList(string("abc")), scope).getAttribute(MESSAGE).as(String.class), equalTo("expected normalized form <abc>, but was <a b c>"));
+		assertThat(matcher.resolveResult(string("abc"), asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
+		assertThat(matcher.resolveResult(string("abc"), asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), equalTo("expected normalized form <xyz>, but was <abc>"));
+		assertThat(matcher.resolveResult(string(" a \nb\t c\r"), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
+		assertThat(matcher.resolveResult(string(" a \nb\t c\r"), asList(string("abc")), scope).getAttribute(MESSAGE).as(String.class), equalTo("expected normalized form <abc>, but was <a b c>"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -62,8 +62,8 @@ public class EvaluatesToMatcherTest {
 		TemplateImmediateExpression broken = Mockito.mock(TemplateImmediateExpression.class);
 		when(broken.getText()).thenThrow(RuntimeException.class);
 		
-		assertThat(resolver.resolveResult(broken , asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
-		assertThat(resolver.resolveResult(broken, asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), containsString("RuntimeException"));
+		assertThat(matcher.resolveResult(broken , asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
+		assertThat(matcher.resolveResult(broken, asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), containsString("RuntimeException"));
 	}
 
 }

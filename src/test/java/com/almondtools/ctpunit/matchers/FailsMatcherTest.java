@@ -30,11 +30,11 @@ import com.almondtools.ctpunit.Status;
 
 public class FailsMatcherTest {
 
-	private FailsMatcher resolver;
+	private FailsMatcher matcher;
 
 	@Before
 	public void before() {
-		resolver = new FailsMatcher();
+		matcher = new FailsMatcher();
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class FailsMatcherTest {
 		Scope scope = mock(Scope.class);
 		ResolvedMapLiteral failure = new ResolvedMapLiteral(var("status", new NativeObject(FAILURE)));
 
-		assertThat(resolver.resolveResult(failure, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(failure, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
 	}
 
 	@Test
@@ -50,8 +50,8 @@ public class FailsMatcherTest {
 		Scope scope = mock(Scope.class);
 		ResolvedMapLiteral success = new ResolvedMapLiteral(var("status", new NativeObject(SUCCESS)));
 		
-		assertThat(resolver.resolveResult(success, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
-		assertThat(resolver.resolveResult(success, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("expecting failing assertion but was success"));
+		assertThat(matcher.resolveResult(success, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
+		assertThat(matcher.resolveResult(success, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("expecting failing assertion but was success"));
 	}
 
 	@Test
@@ -59,8 +59,8 @@ public class FailsMatcherTest {
 		Scope scope = mock(Scope.class);
 		ResolvedMapLiteral ignore = new ResolvedMapLiteral(var("status", new NativeObject(IGNORE)), var("message",string("ignore message")));
 
-		assertThat(resolver.resolveResult(ignore, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(IGNORE));
-		assertThat(resolver.resolveResult(ignore, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("ignore message"));
+		assertThat(matcher.resolveResult(ignore, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(IGNORE));
+		assertThat(matcher.resolveResult(ignore, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("ignore message"));
 	}
 
 	@Test
@@ -68,8 +68,8 @@ public class FailsMatcherTest {
 		Scope scope = mock(Scope.class);
 		ResolvedMapLiteral ignore = new ResolvedMapLiteral(var("status", new NativeObject(ERROR)), var("message",string("error message")));
 		
-		assertThat(resolver.resolveResult(ignore, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
-		assertThat(resolver.resolveResult(ignore, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("error message"));
+		assertThat(matcher.resolveResult(ignore, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
+		assertThat(matcher.resolveResult(ignore, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("error message"));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -79,8 +79,8 @@ public class FailsMatcherTest {
 		TemplateImmediateExpression broken = Mockito.mock(TemplateImmediateExpression.class);
 		when(broken.getText()).thenThrow(RuntimeException.class);
 		
-		assertThat(resolver.resolveResult(broken , asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
-		assertThat(resolver.resolveResult(broken, asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), containsString("ClassCastException"));
+		assertThat(matcher.resolveResult(broken , asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
+		assertThat(matcher.resolveResult(broken, asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), containsString("ClassCastException"));
 	}
 
 }
