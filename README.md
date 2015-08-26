@@ -10,7 +10,7 @@ A typical test specification may be following file `testexample.ctg`:
       <html>@content</html>
     }
 
-    testSuccess ::= html("content").evaluatesTo("<html>content</html>")
+    testSuccess ::= html("content").eqCW("<html>content</html>")
     
     testFails ::= html("content").equalTo("<html>content</html>")
 
@@ -36,12 +36,24 @@ CtpUnit provides some Standard Matchers for testing:
 
 The `equalTo` matcher returns **success** if the base and the argument are literally equal. In general this is whitespace-sensitive, yet the first and last newline get cut.   
 
-### evaluatesTo
+### contains
 
-The `evaluatesTo` matcher returns **success** if the base and the argument are equivalent contents. This means that whitespace is compressed and trimmed:
+The `contains` matcher returns **success** if the base string contains the argument (or elements of the argument list):
+- if the argument is a string value base must contain the given argument
+- if the argument is a list base must contain the elements of this list in correct order.
 
-- inner whitespace sequences are reduces to `' '`
-- leading and trailing whitespace sequences are trimmed
+This matcher is whitespace sensitive an case sensitive on the arguments value(s).
+
+### eqNW
+
+The `eqNW` matcher returns **success** if the base and the argument are equal ignoring whitespace.
+
+### eqCW
+
+The `eqCW` matcher returns **success** if the base and the argument are equal with compressed whitespace:
+
+- inner whitespace sequences are reduces to `' '` (single space)
+- leading and trailing whitespace sequences are trimmed (replaced by empty string)
 
 ### fails
 
