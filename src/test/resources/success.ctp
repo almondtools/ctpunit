@@ -4,14 +4,21 @@ html(content) ::= {
 
 test1 ::= html("content").equalTo("<html>content</html>")
  
-test2 ::= html("othercontent").evaluatesTo({
- <html>
-   othercontent
- </html>
-}
+test2 ::= html("othercontent").eqCW({
  
-test3 ::= html("other content").evaluatesTo({
+ <html>othercontent</html>
+ 
+})
+ 
+test3 ::= html("other content").eqNW({
 <html>
   other content
 </html>
-}
+})
+
+test4 ::= html("othercontent").eqNW({
+ <html>
+   other
+   content
+ </html>
+})

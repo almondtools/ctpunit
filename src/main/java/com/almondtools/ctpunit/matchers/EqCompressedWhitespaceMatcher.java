@@ -8,13 +8,13 @@ import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
 import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
 import com.almondtools.ctpunit.FunctionMatcher;
 
-public class EvaluatesToMatcher extends FunctionMatcher {
+public class EqCompressedWhitespaceMatcher extends FunctionMatcher {
 
-	private static Pattern SKIP = Pattern.compile("(^\\s+)|(\\s+$)|([\\r\\n]+\\s*)"); 
+	private static Pattern SKIP = Pattern.compile("(^\\s+)|(\\s+$)"); 
 	private static Pattern COMPRESS = Pattern.compile("\\s+"); 
 	
-	public EvaluatesToMatcher() {
-		super("evaluatesTo", 1);
+	public EqCompressedWhitespaceMatcher() {
+		super("eqCW", 1);
 	}
 
 	@Override

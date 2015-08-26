@@ -23,13 +23,13 @@ import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
 import com.almondtools.ctpunit.Status;
 
 
-public class EvaluatesToMatcherTest {
+public class EqNoWhitespaceMatcherTest {
 
-	private EvaluatesToMatcher matcher;
+	private EqNoWhitespaceMatcher matcher;
 
 	@Before
 	public void before() {
-		matcher = new EvaluatesToMatcher();
+		matcher = new EqNoWhitespaceMatcher();
 	}
 
 	@Test
@@ -43,6 +43,8 @@ public class EvaluatesToMatcherTest {
 		assertThat(matcher.resolveResult(string("abc "), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
 		assertThat(matcher.resolveResult(string("a b  c"), asList(string("a b c")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
 		assertThat(matcher.resolveResult(string(" a \nb\t c\r"), asList(string("a b c")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(string("a b c"), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
+		assertThat(matcher.resolveResult(string("abc"), asList(string(" a b c ")), scope).getAttribute(STATUS).as(Status.class), is(SUCCESS));
 	}
 
 	@Test
@@ -51,8 +53,6 @@ public class EvaluatesToMatcherTest {
 
 		assertThat(matcher.resolveResult(string("abc"), asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
 		assertThat(matcher.resolveResult(string("abc"), asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), equalTo("expected normalized form <xyz>, but was <abc>"));
-		assertThat(matcher.resolveResult(string(" a \nb\t c\r"), asList(string("abc")), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
-		assertThat(matcher.resolveResult(string(" a \nb\t c\r"), asList(string("abc")), scope).getAttribute(MESSAGE).as(String.class), equalTo("expected normalized form <abc>, but was <a b c>"));
 	}
 
 	@SuppressWarnings("unchecked")
