@@ -27,7 +27,6 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
 import com.almondtools.comtemplate.engine.ClassPathTemplateLoader;
-import com.almondtools.comtemplate.engine.ConstantDefinition;
 import com.almondtools.comtemplate.engine.DefaultErrorHandler;
 import com.almondtools.comtemplate.engine.ResolverRegistry;
 import com.almondtools.comtemplate.engine.Scope;
@@ -35,10 +34,11 @@ import com.almondtools.comtemplate.engine.TemplateEventNotifier;
 import com.almondtools.comtemplate.engine.TemplateGroup;
 import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
 import com.almondtools.comtemplate.engine.TemplateLoader;
+import com.almondtools.comtemplate.engine.ValueDefinition;
 import com.almondtools.comtemplate.engine.expressions.ErrorExpression;
 import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
 
-public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements Filterable {
+public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filterable {
 
 	private static final String TEST = "test";
 
@@ -79,8 +79,8 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 	}
 	
 	@Override
-	protected List<ConstantDefinition> getChildren() {
-		List<ConstantDefinition> children = new ArrayList<ConstantDefinition>();
+	protected List<ValueDefinition> getChildren() {
+		List<ValueDefinition> children = new ArrayList<ValueDefinition>();
 		TestClass testClass = getTestClass();
 		SpecData data = new SpecData(testClass.getAnnotation(Spec.class));
 		for (FrameworkMethod method : testClass.getAnnotatedMethods()) {
@@ -91,12 +91,12 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 	}
 
 	@Override
-	protected Description describeChild(ConstantDefinition child) {
+	protected Description describeChild(ValueDefinition child) {
 		return Description.createTestDescription(getTestClass().getJavaClass(), child.getGroup().getName() + "." + child.getName());
 	}
 	
 	@Override
-	protected void runChild(ConstantDefinition child, RunNotifier notifier) {
+	protected void runChild(ValueDefinition child, RunNotifier notifier) {
 		Description description = describeChild(child);
 		notifier.fireTestStarted(description);
 		TemplateImmediateExpression evaluated = child.evaluate(interpreter, new Scope(null, child), emptyList());
@@ -132,7 +132,7 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 		return new Failure(description, new AssertionError(message));
 	}
 
-	public Failure error(Description description, ConstantDefinition child) {
+	public Failure error(Description description, ValueDefinition child) {
 		return error(description, child.getName() + " is not a valid test case");
 	}
 
@@ -140,11 +140,11 @@ public class CtpUnitRunner extends ParentRunner<ConstantDefinition> implements F
 		return new Failure(description, new IllegalArgumentException(message));
 	}
 
-	private List<ConstantDefinition> getSpecsFor(SpecData data) {
+	private List<ValueDefinition> getSpecsFor(SpecData data) {
 		TemplateGroup group = loader.loadGroup(data.group);
 		return group.getDefinitions().stream()
-			.filter(def -> def instanceof ConstantDefinition)
-			.map(def -> (ConstantDefinition) def)
+			.filter(def -> def instanceof ValueDefinition)
+			.map(def -> (ValueDefinition) def)
 			.filter(con -> con.getName().startsWith(TEST))
 			.collect(toList());
 	}
