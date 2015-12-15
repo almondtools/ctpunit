@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
@@ -26,6 +27,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.almondtools.comtemplate.engine.InterpreterListener;
 import com.almondtools.comtemplate.engine.TemplateCompiler;
+import com.almondtools.comtemplate.engine.TemplateDefinition;
 import com.almondtools.comtemplate.engine.TemplateExpression;
 import com.almondtools.comtemplate.engine.TemplateGroup;
 import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
@@ -45,7 +47,7 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 		this.coverableByGroup = new LinkedHashMap<>();
 		this.coverage = new IdentityHashMap<>();
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				dumpCoverage(new PrintWriter(System.out));
@@ -115,21 +117,15 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 	}
 
 	@Override
-	public TemplateGroup compile(String name, InputStream stream, TemplateLoader loader) throws IOException {
-		return new TemplateGroupBuilder(name, stream, loader) {
-			public TemplateGroupNode visit(ParseTree tree) {
-				TemplateGroupNode result = super.visit(tree);
-				TemplateExpression expression = result.as(TemplateExpression.class);
-				if (isCoverableExpression(expression) && tree instanceof ParserRuleContext) {
-					ParserRuleContext ruleContext = (ParserRuleContext) tree;
-					Interval coverage = ruleContext.getSourceInterval();
-					coverableByGroup.compute(name, mergeCoverage(expression));
-					locations.put(expression, new TokenInterval(coverage, ruleContext.start, ruleContext.stop));
-				}
-				return result;
-			}
+	public TemplateGroup compileLibrary(String name, InputStream stream, TemplateLoader loader) throws IOException {
+		return new CoverageBuilder(name, loader)
+			.parseGroup(new ANTLRInputStream(stream)).buildGroup();
+	}
 
-		}.build();
+	@Override
+	public TemplateDefinition compileMain(String name, InputStream stream, TemplateLoader loader) throws IOException {
+		return new CoverageBuilder(name, loader)
+			.parseMain(new ANTLRInputStream(stream)).buildMain();
 	}
 
 	public boolean isCoverableExpression(TemplateExpression expression) {
@@ -153,4 +149,23 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 		};
 	}
 
+	private class CoverageBuilder extends TemplateGroupBuilder {
+
+		public CoverageBuilder(String name, TemplateLoader loader) throws IOException {
+			super(name, loader);
+		}
+
+		public TemplateGroupNode visit(ParseTree tree) {
+			TemplateGroupNode result = super.visit(tree);
+			TemplateExpression expression = result.as(TemplateExpression.class);
+			if (isCoverableExpression(expression) && tree instanceof ParserRuleContext) {
+				ParserRuleContext ruleContext = (ParserRuleContext) tree;
+				Interval coverage = ruleContext.getSourceInterval();
+				coverableByGroup.compute(getName(), mergeCoverage(expression));
+				locations.put(expression, new TokenInterval(coverage, ruleContext.start, ruleContext.stop));
+			}
+			return result;
+		}
+
+	}
 }
