@@ -1,5 +1,7 @@
 package com.almondtools.ctpunit.matchers;
 
+import static java.util.Arrays.asList;
+
 import java.util.List;
 
 import com.almondtools.comtemplate.engine.Scope;
@@ -21,11 +23,16 @@ public class EqualToMatcher extends FunctionMatcher {
 			if (actual.equals(expected)) {
 				return success();
 			} else {
-				return failure("expected <" + expected + ">, but was <" + actual + ">");
+				return failure("expected <" + expected + ">, but was <" + actual + ">", expected, actual);
 			}
 		} catch (RuntimeException e) {
 			return error(e);
 		}
+	}
+
+	@Override
+	public List<Class<? extends TemplateImmediateExpression>> getResolvedClasses() {
+		return asList(TemplateImmediateExpression.class);
 	}
 
 }

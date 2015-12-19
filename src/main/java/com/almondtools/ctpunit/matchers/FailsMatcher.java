@@ -2,6 +2,7 @@ package com.almondtools.ctpunit.matchers;
 
 import static com.almondtools.ctpunit.Status.FAILURE;
 import static com.almondtools.ctpunit.Status.SUCCESS;
+import static java.util.Arrays.asList;
 
 import java.util.List;
 
@@ -32,6 +33,11 @@ public class FailsMatcher extends FunctionMatcher {
 		} catch (RuntimeException e) {
 			return error(e);
 		}
+	}
+
+	@Override
+	public List<Class<? extends TemplateImmediateExpression>> getResolvedClasses() {
+		return asList(TemplateImmediateExpression.class);
 	}
 
 }

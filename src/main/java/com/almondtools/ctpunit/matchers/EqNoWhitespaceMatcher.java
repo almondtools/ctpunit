@@ -1,5 +1,7 @@
 package com.almondtools.ctpunit.matchers;
 
+import static java.util.Arrays.asList;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -24,7 +26,7 @@ public class EqNoWhitespaceMatcher extends FunctionMatcher {
 			if (actual.equals(expected)) {
 				return success();
 			} else {
-				return failure("expected normalized form <" + expected + ">, but was <" + actual + ">");
+				return failure("expected normalized form <" + expected + ">, but was <" + actual + ">", expected, actual);
 			}
 		} catch (RuntimeException e) {
 			return error(e);
@@ -32,8 +34,12 @@ public class EqNoWhitespaceMatcher extends FunctionMatcher {
 	}
 
 	private String normalized(String string) {
-		String skipped = SKIP.matcher(string).replaceAll("");
-		return skipped;
+		return SKIP.matcher(string).replaceAll("");
+	}
+
+	@Override
+	public List<Class<? extends TemplateImmediateExpression>> getResolvedClasses() {
+		return asList(TemplateImmediateExpression.class);
 	}
 
 }

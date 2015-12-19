@@ -1,5 +1,7 @@
 package com.almondtools.ctpunit.matchers;
 
+import static java.util.Arrays.asList;
+
 import java.util.List;
 
 import com.almondtools.comtemplate.engine.Scope;
@@ -25,7 +27,7 @@ public class ContainsMatcher extends FunctionMatcher {
 					String expected = argumentItem.getText();
 					int foundAt = actual.indexOf(expected);
 					if (foundAt < start) {
-						return failure("expected containing all of <" + argument.getText() + ">, but was <" + actual + ">");
+						return failure("expected containing all of <" + argument.getText() + ">, but was <" + actual + ">", expected, actual);
 					} else {
 						start = foundAt + expected.length();
 					}
@@ -36,12 +38,17 @@ public class ContainsMatcher extends FunctionMatcher {
 				if (actual.contains(expected)) {
 					return success();
 				} else {
-					return failure("expected containing <" + expected + ">, but was <" + actual + ">");
+					return failure("expected containing <" + expected + ">, but was <" + actual + ">", expected, actual);
 				}
 			}
 		} catch (RuntimeException e) {
 			return error(e);
 		}
+	}
+	
+	@Override
+	public List<Class<? extends TemplateImmediateExpression>> getResolvedClasses() {
+		return asList(TemplateImmediateExpression.class);
 	}
 
 }

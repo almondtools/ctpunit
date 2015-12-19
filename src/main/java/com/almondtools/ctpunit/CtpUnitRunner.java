@@ -1,6 +1,8 @@
 package com.almondtools.ctpunit;
 
 import static com.almondtools.comtemplate.engine.GlobalTemplates.defaultTemplates;
+import static com.almondtools.ctpunit.FunctionMatcher.ACTUAL;
+import static com.almondtools.ctpunit.FunctionMatcher.EXPECTED;
 import static com.almondtools.ctpunit.FunctionMatcher.MESSAGE;
 import static com.almondtools.ctpunit.FunctionMatcher.STATUS;
 import static com.almondtools.ctpunit.Status.FAILURE;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.ComparisonFailure;
 import org.junit.runner.Description;
 import org.junit.runner.manipulation.Filterable;
 import org.junit.runner.notification.Failure;
@@ -45,37 +48,14 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 	private static ThreadLocal<CtpUnitCoverageCompiler> compiler = ThreadLocal.withInitial(CtpUnitCoverageCompiler::new);
 	
 	private TemplateLoader loader;
-	private CtpUnitMatchers matchers;
 	private TemplateEventNotifier interpreter;
 
 
 	public CtpUnitRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
 		loader = new ClassPathTemplateLoader(compiler.get());
-		matchers = matchers(testClass);
-		interpreter = new TemplateEventNotifier(resolvers(matchers), defaultTemplates(), new DefaultErrorHandler());
+		interpreter = new TemplateEventNotifier(ResolverRegistry.defaultRegistry(), defaultTemplates(), new DefaultErrorHandler());
 		interpreter.addListener(compiler.get());
-	}
-
-	public CtpUnitMatchers matchers(Class<?> testClass) throws InitializationError {
-		try {
-			CtpUnitMatchers matchers = new CtpUnitMatchers();
-			Matcher matcher = testClass.getAnnotation(Matcher.class);
-			if (matcher != null) {
-				for (Class<? extends FunctionMatcher> matcherClass : matcher.value()) {
-					matchers.add(matcherClass.newInstance());
-				}
-			}
-			return matchers;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new InitializationError(e);
-		}
-	}
-
-	public static ResolverRegistry resolvers(CtpUnitMatchers matchers) {
-		ResolverRegistry resolvers = ResolverRegistry.defaultRegistry();
-		resolvers.register(TemplateImmediateExpression.class, matchers);
-		return resolvers;
 	}
 	
 	@Override
@@ -110,7 +90,15 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 				if (status == SUCCESS) {
 					notifier.fireTestFinished(description);
 				} else if (status == FAILURE) {
+					Optional<String> expected = Optional.ofNullable(result.getAttribute(EXPECTED))
+						.map(msg -> msg.as(String.class));
+					Optional<String> actual = Optional.ofNullable(result.getAttribute(ACTUAL))
+						.map(msg -> msg.as(String.class));
+					if (expected.isPresent() && actual.isPresent()) {
+						notifier.fireTestFailure(failure(description, message, expected.get(), actual.get()));
+					} else {
 					notifier.fireTestFailure(failure(description, message));
+					}
 				} else if (status == IGNORE) {
 					notifier.fireTestIgnored(description);
 				} else if (status == Status.ERROR) {
@@ -130,6 +118,10 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 	
 	public Failure failure(Description description, String message) {
 		return new Failure(description, new AssertionError(message));
+	}
+
+	public Failure failure(Description description, String message, String expected, String actual) {
+		return new Failure(description, new ComparisonFailure(message, expected, actual));
 	}
 
 	public Failure error(Description description, ValueDefinition child) {

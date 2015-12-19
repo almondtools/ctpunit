@@ -19,6 +19,8 @@ import com.almondtools.comtemplate.engine.resolvers.FunctionResolver;
 public abstract class FunctionMatcher extends FunctionResolver {
 
 	public static final String MESSAGE = "message";
+	public static final String EXPECTED = "expected";
+	public static final String ACTUAL = "actual";
 	public static final String STATUS = "status";
 
 	public FunctionMatcher(String name, int arity) {
@@ -38,6 +40,10 @@ public abstract class FunctionMatcher extends FunctionResolver {
 
 	protected ResolvedMapLiteral success() {
 		return new ResolvedMapLiteral(var(STATUS, new NativeObject(SUCCESS)));
+	}
+
+	protected ResolvedMapLiteral failure(String message, String expected, String actual) {
+		return new ResolvedMapLiteral(var(STATUS, new NativeObject(FAILURE)), var(MESSAGE, string(message)), var(EXPECTED, string(expected)), var(ACTUAL, string(actual)));
 	}
 
 	protected ResolvedMapLiteral failure(String message) {
