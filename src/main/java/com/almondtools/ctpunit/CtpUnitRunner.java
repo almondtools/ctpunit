@@ -29,7 +29,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
-import com.almondtools.comtemplate.engine.ClassPathTemplateLoader;
+import com.almondtools.comtemplate.engine.ConfigurableTemplateLoader;
 import com.almondtools.comtemplate.engine.DefaultErrorHandler;
 import com.almondtools.comtemplate.engine.ResolverRegistry;
 import com.almondtools.comtemplate.engine.Scope;
@@ -46,18 +46,18 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 	private static final String TEST = "test";
 
 	private static ThreadLocal<CtpUnitCoverageCompiler> compiler = ThreadLocal.withInitial(CtpUnitCoverageCompiler::new);
-	
+
 	private TemplateLoader loader;
 	private TemplateEventNotifier interpreter;
 
-
 	public CtpUnitRunner(Class<?> testClass) throws InitializationError {
 		super(testClass);
-		loader = new ClassPathTemplateLoader(compiler.get());
+		loader = new ConfigurableTemplateLoader(compiler.get())
+			.withClasspath(true);
 		interpreter = new TemplateEventNotifier(ResolverRegistry.defaultRegistry(), defaultTemplates(), new DefaultErrorHandler());
 		interpreter.addListener(compiler.get());
 	}
-	
+
 	@Override
 	protected List<ValueDefinition> getChildren() {
 		List<ValueDefinition> children = new ArrayList<ValueDefinition>();
@@ -74,7 +74,7 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 	protected Description describeChild(ValueDefinition child) {
 		return Description.createTestDescription(getTestClass().getJavaClass(), child.getGroup().getName() + "." + child.getName());
 	}
-	
+
 	@Override
 	protected void runChild(ValueDefinition child, RunNotifier notifier) {
 		Description description = describeChild(child);
@@ -97,7 +97,7 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 					if (expected.isPresent() && actual.isPresent()) {
 						notifier.fireTestFailure(failure(description, message, expected.get(), actual.get()));
 					} else {
-					notifier.fireTestFailure(failure(description, message));
+						notifier.fireTestFailure(failure(description, message));
 					}
 				} else if (status == IGNORE) {
 					notifier.fireTestIgnored(description);
@@ -115,7 +115,7 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 			}
 		}
 	}
-	
+
 	public Failure failure(Description description, String message) {
 		return new Failure(description, new AssertionError(message));
 	}
