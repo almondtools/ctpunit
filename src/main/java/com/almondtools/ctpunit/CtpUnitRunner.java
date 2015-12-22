@@ -79,8 +79,9 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 	protected void runChild(ValueDefinition child, RunNotifier notifier) {
 		Description description = describeChild(child);
 		notifier.fireTestStarted(description);
-		TemplateImmediateExpression evaluated = child.evaluate(interpreter, new Scope(null, child), emptyList());
+		TemplateImmediateExpression evaluated = null;
 		try {
+			evaluated = child.evaluate(interpreter, new Scope(null, child), emptyList());
 			ResolvedMapLiteral result = (ResolvedMapLiteral) evaluated;
 			Status status = result.getAttribute(STATUS).as(Status.class);
 			String message = Optional.ofNullable(result.getAttribute(MESSAGE))
@@ -111,7 +112,7 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 			if (evaluated instanceof ErrorExpression) {
 				notifier.fireTestFailure(error(description, ((ErrorExpression) evaluated).getMessage()));
 			} else {
-				notifier.fireTestFailure(error(description, child));
+				notifier.fireTestFailure(error(description, child, e.getMessage()));
 			}
 		}
 	}
@@ -126,6 +127,10 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 
 	public Failure error(Description description, ValueDefinition child) {
 		return error(description, child.getName() + " is not a valid test case");
+	}
+
+	public Failure error(Description description, ValueDefinition child, String message) {
+		return error(description, child.getName() + " failed with exception: " + message);
 	}
 
 	public Failure error(Description description, String message) {
