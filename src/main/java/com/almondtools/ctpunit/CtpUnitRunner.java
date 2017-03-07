@@ -1,6 +1,8 @@
 package com.almondtools.ctpunit;
 
 import static com.almondtools.comtemplate.engine.GlobalTemplates.defaultTemplates;
+import static com.almondtools.comtemplate.engine.TemplateVariable.var;
+import static com.almondtools.comtemplate.engine.expressions.StringLiteral.string;
 import static com.almondtools.ctpunit.FunctionMatcher.ACTUAL;
 import static com.almondtools.ctpunit.FunctionMatcher.EXPECTED;
 import static com.almondtools.ctpunit.FunctionMatcher.MESSAGE;
@@ -28,18 +30,23 @@ import org.junit.runners.ParentRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
+import org.mockito.asm.tree.analysis.Value;
 
 import com.almondtools.comtemplate.engine.ConfigurableTemplateLoader;
 import com.almondtools.comtemplate.engine.DefaultErrorHandler;
 import com.almondtools.comtemplate.engine.ResolverRegistry;
 import com.almondtools.comtemplate.engine.Scope;
+import com.almondtools.comtemplate.engine.TemplateDefinition;
 import com.almondtools.comtemplate.engine.TemplateEventNotifier;
 import com.almondtools.comtemplate.engine.TemplateGroup;
 import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
 import com.almondtools.comtemplate.engine.TemplateLoader;
+import com.almondtools.comtemplate.engine.TemplateVariable;
 import com.almondtools.comtemplate.engine.ValueDefinition;
 import com.almondtools.comtemplate.engine.expressions.ErrorExpression;
 import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
+import com.almondtools.comtemplate.engine.expressions.StringLiteral;
+import com.almondtools.comtemplate.processor.TemplateProcessor;
 
 public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filterable {
 
@@ -81,7 +88,7 @@ public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filt
 		notifier.fireTestStarted(description);
 		TemplateImmediateExpression evaluated = null;
 		try {
-			evaluated = child.evaluate(interpreter, new Scope(null, child), emptyList());
+			evaluated = child.evaluate(interpreter, new Scope(null, child, var(TemplateProcessor.SOURCE, string(".")), var(TemplateProcessor.TARGET, string("."))), emptyList());
 			ResolvedMapLiteral result = (ResolvedMapLiteral) evaluated;
 			Status status = result.getAttribute(STATUS).as(Status.class);
 			String message = Optional.ofNullable(result.getAttribute(MESSAGE))
