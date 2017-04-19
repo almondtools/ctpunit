@@ -72,7 +72,6 @@ public class FailsMatcherTest {
 		assertThat(matcher.resolveResult(ignore, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("error message"));
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testError() throws Exception {
 		Scope scope = mock(Scope.class);

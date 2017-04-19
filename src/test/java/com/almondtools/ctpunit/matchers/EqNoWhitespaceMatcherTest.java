@@ -55,7 +55,6 @@ public class EqNoWhitespaceMatcherTest {
 		assertThat(matcher.resolveResult(string("abc"), asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), equalTo("expected normalized form <xyz>, but was <abc>"));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testError() throws Exception {
 		Scope scope = mock(Scope.class);

@@ -57,7 +57,6 @@ public class EqCompressedWhitespaceMatcherTest {
 		assertThat(matcher.resolveResult(string(" a\n b\t c\r"), asList(string("abc")), scope).getAttribute(MESSAGE).as(String.class), equalTo("expected normalized form <abc>, but was <a b c>"));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testError() throws Exception {
 		Scope scope = mock(Scope.class);

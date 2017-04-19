@@ -65,7 +65,6 @@ public class ContainsMatcherTest {
 		assertThat(matcher.resolveResult(string("abc"), asList(new ResolvedListLiteral(string("b"), string("a"))), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testError() throws Exception {
 		Scope scope = mock(Scope.class);

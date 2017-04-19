@@ -30,22 +30,18 @@ import org.junit.runners.ParentRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
-import org.mockito.asm.tree.analysis.Value;
 
 import com.almondtools.comtemplate.engine.ConfigurableTemplateLoader;
 import com.almondtools.comtemplate.engine.DefaultErrorHandler;
 import com.almondtools.comtemplate.engine.ResolverRegistry;
 import com.almondtools.comtemplate.engine.Scope;
-import com.almondtools.comtemplate.engine.TemplateDefinition;
 import com.almondtools.comtemplate.engine.TemplateEventNotifier;
 import com.almondtools.comtemplate.engine.TemplateGroup;
 import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
 import com.almondtools.comtemplate.engine.TemplateLoader;
-import com.almondtools.comtemplate.engine.TemplateVariable;
 import com.almondtools.comtemplate.engine.ValueDefinition;
 import com.almondtools.comtemplate.engine.expressions.ErrorExpression;
 import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
-import com.almondtools.comtemplate.engine.expressions.StringLiteral;
 import com.almondtools.comtemplate.processor.TemplateProcessor;
 
 public class CtpUnitRunner extends ParentRunner<ValueDefinition> implements Filterable {

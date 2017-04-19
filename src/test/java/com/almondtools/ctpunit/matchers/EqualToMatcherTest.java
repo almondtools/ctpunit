@@ -54,7 +54,6 @@ public class EqualToMatcherTest {
 		assertThat(matcher.resolveResult(string("a b  c"), asList(string("ab  c")), scope).getAttribute(MESSAGE).as(String.class), equalTo("expected <ab  c>, but was <a b  c>"));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testError() throws Exception {
 		Scope scope = mock(Scope.class);
