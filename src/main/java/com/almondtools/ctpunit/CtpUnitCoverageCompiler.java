@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
@@ -119,13 +119,13 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 	@Override
 	public TemplateGroup compileLibrary(String name, InputStream stream, TemplateLoader loader) throws IOException {
 		return new CoverageBuilder(name, loader)
-			.parseGroup(new ANTLRInputStream(stream)).buildGroup();
+			.parseGroup(CharStreams.fromStream(stream)).buildGroup();
 	}
 
 	@Override
 	public TemplateDefinition compileMain(String name, InputStream stream, TemplateLoader loader) throws IOException {
 		return new CoverageBuilder(name, loader)
-			.parseMain(new ANTLRInputStream(stream)).buildMain();
+			.parseMain(CharStreams.fromStream(stream)).buildMain();
 	}
 
 	public boolean isCoverableExpression(TemplateExpression expression) {
