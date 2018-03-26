@@ -117,14 +117,14 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 	}
 
 	@Override
-	public TemplateGroup compileLibrary(String name, InputStream stream, TemplateLoader loader) throws IOException {
-		return new CoverageBuilder(name, loader)
+	public TemplateGroup compileLibrary(String name, String resource, InputStream stream, TemplateLoader loader) throws IOException {
+		return new CoverageBuilder(name, resource, loader)
 			.parseGroup(CharStreams.fromStream(stream)).buildGroup();
 	}
 
 	@Override
-	public TemplateDefinition compileMain(String name, InputStream stream, TemplateLoader loader) throws IOException {
-		return new CoverageBuilder(name, loader)
+	public TemplateDefinition compileMain(String name, String resource, InputStream stream, TemplateLoader loader) throws IOException {
+		return new CoverageBuilder(name, resource, loader)
 			.parseMain(CharStreams.fromStream(stream)).buildMain();
 	}
 
@@ -151,8 +151,8 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 
 	private class CoverageBuilder extends TemplateGroupBuilder {
 
-		public CoverageBuilder(String name, TemplateLoader loader) throws IOException {
-			super(name, loader);
+		public CoverageBuilder(String name, String resource, TemplateLoader loader) throws IOException {
+			super(name, resource, loader);
 		}
 
 		public TemplateGroupNode visit(ParseTree tree) {
