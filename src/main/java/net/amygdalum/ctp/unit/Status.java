@@ -1,4 +1,4 @@
-package com.almondtools.ctpunit;
+package net.amygdalum.ctp.unit;
 
 public enum Status {
 	SUCCESS, IGNORE, FAILURE(true), ERROR(true);

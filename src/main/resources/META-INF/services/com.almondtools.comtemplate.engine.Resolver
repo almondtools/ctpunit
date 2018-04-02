@@ -1,5 +1,0 @@
-com.almondtools.ctpunit.matchers.ContainsMatcher
-com.almondtools.ctpunit.matchers.EqCompressedWhitespaceMatcher
-com.almondtools.ctpunit.matchers.EqNoWhitespaceMatcher
-com.almondtools.ctpunit.matchers.EqualToMatcher
-com.almondtools.ctpunit.matchers.FailsMatcher

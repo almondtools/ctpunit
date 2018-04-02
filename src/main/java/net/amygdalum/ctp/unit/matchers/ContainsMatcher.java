@@ -1,14 +1,14 @@
-package com.almondtools.ctpunit.matchers;
+package net.amygdalum.ctp.unit.matchers;
 
 import static java.util.Arrays.asList;
 
 import java.util.List;
 
-import com.almondtools.comtemplate.engine.Scope;
-import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
-import com.almondtools.comtemplate.engine.expressions.ResolvedListLiteral;
-import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
-import com.almondtools.ctpunit.FunctionMatcher;
+import net.amygdalum.comtemplate.engine.Scope;
+import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
+import net.amygdalum.comtemplate.engine.expressions.ResolvedListLiteral;
+import net.amygdalum.comtemplate.engine.expressions.ResolvedMapLiteral;
+import net.amygdalum.ctp.unit.FunctionMatcher;
 
 public class ContainsMatcher extends FunctionMatcher {
 

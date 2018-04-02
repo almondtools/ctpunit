@@ -1,4 +1,4 @@
-package com.almondtools.ctpunit;
+package net.amygdalum.ctp.unit;
 
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;

@@ -1,20 +1,20 @@
-package com.almondtools.ctpunit;
+package net.amygdalum.ctp.unit;
 
-import static com.almondtools.comtemplate.engine.TemplateVariable.var;
-import static com.almondtools.comtemplate.engine.expressions.StringLiteral.string;
-import static com.almondtools.ctpunit.Status.ERROR;
-import static com.almondtools.ctpunit.Status.FAILURE;
-import static com.almondtools.ctpunit.Status.SUCCESS;
+import static net.amygdalum.comtemplate.engine.TemplateVariable.var;
+import static net.amygdalum.comtemplate.engine.expressions.StringLiteral.string;
+import static net.amygdalum.ctp.unit.Status.ERROR;
+import static net.amygdalum.ctp.unit.Status.FAILURE;
+import static net.amygdalum.ctp.unit.Status.SUCCESS;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 
-import com.almondtools.comtemplate.engine.Scope;
-import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
-import com.almondtools.comtemplate.engine.expressions.NativeObject;
-import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
-import com.almondtools.comtemplate.engine.resolvers.FunctionResolver;
+import net.amygdalum.comtemplate.engine.Scope;
+import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
+import net.amygdalum.comtemplate.engine.expressions.NativeObject;
+import net.amygdalum.comtemplate.engine.expressions.ResolvedMapLiteral;
+import net.amygdalum.comtemplate.engine.resolvers.FunctionResolver;
 
 public abstract class FunctionMatcher extends FunctionResolver {
 

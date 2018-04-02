@@ -1,16 +1,16 @@
-package com.almondtools.ctpunit.matchers;
+package net.amygdalum.ctp.unit.matchers;
 
-import static com.almondtools.ctpunit.Status.FAILURE;
-import static com.almondtools.ctpunit.Status.SUCCESS;
 import static java.util.Arrays.asList;
+import static net.amygdalum.ctp.unit.Status.FAILURE;
+import static net.amygdalum.ctp.unit.Status.SUCCESS;
 
 import java.util.List;
 
-import com.almondtools.comtemplate.engine.Scope;
-import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
-import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
-import com.almondtools.ctpunit.FunctionMatcher;
-import com.almondtools.ctpunit.Status;
+import net.amygdalum.comtemplate.engine.Scope;
+import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
+import net.amygdalum.comtemplate.engine.expressions.ResolvedMapLiteral;
+import net.amygdalum.ctp.unit.FunctionMatcher;
+import net.amygdalum.ctp.unit.Status;
 
 public class FailsMatcher extends FunctionMatcher {
 

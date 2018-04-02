@@ -1,4 +1,4 @@
-package com.almondtools.ctpunit.examples;
+package net.amygdalum.ctp.unit.examples;
 
 import java.util.stream.Stream;
 
@@ -6,14 +6,14 @@ import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.almondtools.ctpunit.CtpUnitExtension.Spec;
-import com.almondtools.ctpunit.CtpUnitExtension;
-import com.almondtools.ctpunit.CtpUnitTestSuite;
+import net.amygdalum.ctp.unit.CtpUnitExtension;
+import net.amygdalum.ctp.unit.CtpUnitTestSuite;
+import net.amygdalum.ctp.unit.CtpUnitExtension.Spec;
 
 @ExtendWith(CtpUnitExtension.class)
 public class ExamplesTest {
 
-	@Spec(src = "src/test/resources")
+	@Spec(src = "src/test/ctp", modules="")
 	@TestFactory
 	public Stream<DynamicNode> tests(CtpUnitTestSuite suite) throws Exception {
 		return suite.testsuite();

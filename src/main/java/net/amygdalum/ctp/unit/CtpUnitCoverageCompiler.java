@@ -1,4 +1,4 @@
-package com.almondtools.ctpunit;
+package net.amygdalum.ctp.unit;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
@@ -25,16 +25,16 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import com.almondtools.comtemplate.engine.InterpreterListener;
-import com.almondtools.comtemplate.engine.TemplateCompiler;
-import com.almondtools.comtemplate.engine.TemplateDefinition;
-import com.almondtools.comtemplate.engine.TemplateExpression;
-import com.almondtools.comtemplate.engine.TemplateGroup;
-import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
-import com.almondtools.comtemplate.engine.TemplateLoader;
-import com.almondtools.comtemplate.engine.expressions.EvalAnonymousTemplate;
-import com.almondtools.comtemplate.parser.TemplateGroupBuilder;
-import com.almondtools.comtemplate.parser.TemplateGroupNode;
+import net.amygdalum.comtemplate.engine.InterpreterListener;
+import net.amygdalum.comtemplate.engine.TemplateCompiler;
+import net.amygdalum.comtemplate.engine.TemplateDefinition;
+import net.amygdalum.comtemplate.engine.TemplateExpression;
+import net.amygdalum.comtemplate.engine.TemplateGroup;
+import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
+import net.amygdalum.comtemplate.engine.TemplateLoader;
+import net.amygdalum.comtemplate.engine.expressions.EvalAnonymousTemplate;
+import net.amygdalum.comtemplate.parser.TemplateGroupBuilder;
+import net.amygdalum.comtemplate.parser.TemplateGroupNode;
 
 public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterListener {
 

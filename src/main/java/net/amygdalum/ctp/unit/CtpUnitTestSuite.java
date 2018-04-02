@@ -1,15 +1,15 @@
-package com.almondtools.ctpunit;
+package net.amygdalum.ctp.unit;
 
-import static com.almondtools.comtemplate.engine.TemplateVariable.var;
-import static com.almondtools.comtemplate.engine.expressions.StringLiteral.string;
-import static com.almondtools.ctpunit.FunctionMatcher.ACTUAL;
-import static com.almondtools.ctpunit.FunctionMatcher.EXPECTED;
-import static com.almondtools.ctpunit.FunctionMatcher.MESSAGE;
-import static com.almondtools.ctpunit.FunctionMatcher.STATUS;
-import static com.almondtools.ctpunit.Status.FAILURE;
-import static com.almondtools.ctpunit.Status.IGNORE;
-import static com.almondtools.ctpunit.Status.SUCCESS;
 import static java.util.Collections.emptyList;
+import static net.amygdalum.comtemplate.engine.TemplateVariable.var;
+import static net.amygdalum.comtemplate.engine.expressions.StringLiteral.string;
+import static net.amygdalum.ctp.unit.FunctionMatcher.ACTUAL;
+import static net.amygdalum.ctp.unit.FunctionMatcher.EXPECTED;
+import static net.amygdalum.ctp.unit.FunctionMatcher.MESSAGE;
+import static net.amygdalum.ctp.unit.FunctionMatcher.STATUS;
+import static net.amygdalum.ctp.unit.Status.FAILURE;
+import static net.amygdalum.ctp.unit.Status.IGNORE;
+import static net.amygdalum.ctp.unit.Status.SUCCESS;
 import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
@@ -21,13 +21,13 @@ import org.junit.jupiter.api.DynamicNode;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestSkippedException;
 
-import com.almondtools.comtemplate.engine.Scope;
-import com.almondtools.comtemplate.engine.TemplateDefinition;
-import com.almondtools.comtemplate.engine.TemplateGroup;
-import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
-import com.almondtools.comtemplate.engine.TemplateInterpreter;
-import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
-import com.almondtools.comtemplate.processor.TemplateProcessor;
+import net.amygdalum.comtemplate.engine.Scope;
+import net.amygdalum.comtemplate.engine.TemplateDefinition;
+import net.amygdalum.comtemplate.engine.TemplateGroup;
+import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
+import net.amygdalum.comtemplate.engine.TemplateInterpreter;
+import net.amygdalum.comtemplate.engine.expressions.ResolvedMapLiteral;
+import net.amygdalum.comtemplate.processor.TemplateProcessor;
 
 public class CtpUnitTestSuite {
 

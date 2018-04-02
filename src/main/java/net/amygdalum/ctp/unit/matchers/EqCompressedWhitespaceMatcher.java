@@ -1,21 +1,22 @@
-package com.almondtools.ctpunit.matchers;
+package net.amygdalum.ctp.unit.matchers;
 
 import static java.util.Arrays.asList;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.almondtools.comtemplate.engine.Scope;
-import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
-import com.almondtools.comtemplate.engine.expressions.ResolvedMapLiteral;
-import com.almondtools.ctpunit.FunctionMatcher;
+import net.amygdalum.comtemplate.engine.Scope;
+import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
+import net.amygdalum.comtemplate.engine.expressions.ResolvedMapLiteral;
+import net.amygdalum.ctp.unit.FunctionMatcher;
 
-public class EqNoWhitespaceMatcher extends FunctionMatcher {
+public class EqCompressedWhitespaceMatcher extends FunctionMatcher {
 
-	private static Pattern SKIP = Pattern.compile("\\s+"); 
+	private static Pattern SKIP = Pattern.compile("(^\\s+)|(\\s+$)"); 
+	private static Pattern COMPRESS = Pattern.compile("\\s+"); 
 	
-	public EqNoWhitespaceMatcher() {
-		super("eqNW", 1);
+	public EqCompressedWhitespaceMatcher() {
+		super("eqCW", 1);
 	}
 
 	@Override
@@ -34,7 +35,9 @@ public class EqNoWhitespaceMatcher extends FunctionMatcher {
 	}
 
 	private String normalized(String string) {
-		return SKIP.matcher(string).replaceAll("");
+		String skipped = SKIP.matcher(string).replaceAll("");
+		String compressed = COMPRESS.matcher(skipped).replaceAll(" ");
+		return compressed;
 	}
 
 	@Override

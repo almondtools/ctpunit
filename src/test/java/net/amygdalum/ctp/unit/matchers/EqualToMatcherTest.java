@@ -1,12 +1,12 @@
-package com.almondtools.ctpunit.matchers;
+package net.amygdalum.ctp.unit.matchers;
 
-import static com.almondtools.comtemplate.engine.expressions.StringLiteral.string;
-import static com.almondtools.ctpunit.FunctionMatcher.MESSAGE;
-import static com.almondtools.ctpunit.FunctionMatcher.STATUS;
-import static com.almondtools.ctpunit.Status.ERROR;
-import static com.almondtools.ctpunit.Status.FAILURE;
-import static com.almondtools.ctpunit.Status.SUCCESS;
 import static java.util.Arrays.asList;
+import static net.amygdalum.comtemplate.engine.expressions.StringLiteral.string;
+import static net.amygdalum.ctp.unit.FunctionMatcher.MESSAGE;
+import static net.amygdalum.ctp.unit.FunctionMatcher.STATUS;
+import static net.amygdalum.ctp.unit.Status.ERROR;
+import static net.amygdalum.ctp.unit.Status.FAILURE;
+import static net.amygdalum.ctp.unit.Status.SUCCESS;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -18,9 +18,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.almondtools.comtemplate.engine.Scope;
-import com.almondtools.comtemplate.engine.TemplateImmediateExpression;
-import com.almondtools.ctpunit.Status;
+import net.amygdalum.comtemplate.engine.Scope;
+import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
+import net.amygdalum.ctp.unit.Status;
+import net.amygdalum.ctp.unit.matchers.EqualToMatcher;
 
 
 public class EqualToMatcherTest {
