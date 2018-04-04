@@ -77,7 +77,6 @@ public class CtpUnitExtension implements BeforeEachCallback, ParameterResolver {
 			return new CtpUnitTestSuite(interpreter, Files.walk(path)
 				.filter(p -> Files.isRegularFile(p) && p.getFileName().toString().endsWith(".ctp"))
 				.map(p -> path.relativize(p))
-				.peek(p -> System.out.println(p.toString()))
 				.filter(p -> modules.contains(groupNameFrom(p)))
 				.map(p -> loadTests(p))
 				.collect(toList()));

@@ -4,18 +4,18 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -38,14 +38,16 @@ import net.amygdalum.comtemplate.parser.TemplateGroupNode;
 
 public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterListener {
 
-	private Map<TemplateExpression, TokenInterval> locations;
-	private Map<String, Set<TemplateExpression>> coverableByGroup;
-	private Map<TemplateExpression, Boolean> coverage;
+	private Set<String> groups;
+	private Map<TemplateExpression, Set<TokenInterval>> locations;
+	private SortedSet<TokenInterval> uncovered;
+	private SortedSet<TokenInterval> covered;
 
 	public CtpUnitCoverageCompiler() {
-		this.locations = new IdentityHashMap<>();
-		this.coverableByGroup = new LinkedHashMap<>();
-		this.coverage = new IdentityHashMap<>();
+		groups = new LinkedHashSet<>();
+		locations = new IdentityHashMap<>();
+		uncovered= new TreeSet<>();
+		covered= new TreeSet<>();
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 
 			@Override
@@ -56,7 +58,7 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 	}
 
 	public void dumpCoverage(PrintWriter writer) {
-		for (String group : getGroupsInScope()) {
+		for (String group : groups) {
 			List<TokenInterval> covered = getCovered(group);
 			List<TokenInterval> uncovered = getUncovered(group);
 			for (TokenInterval c : covered) {
@@ -70,34 +72,20 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 	}
 
 	public List<TokenInterval> getUncovered(String group) {
-		List<TemplateExpression> uncovered = coverableByGroup.get(group).stream()
-			.filter(expr -> !coverage.containsKey(expr))
-			.collect(toList());
-
-		Map<Integer, Token> tokens = tokens(uncovered);
-		IntervalSet intervals = intervals(uncovered);
-
-		return intervals.getIntervals().stream()
-			.map(interval -> new TokenInterval(interval, tokens.get(interval.a), tokens.get(interval.b)))
+		return uncovered.stream()
+			.filter(interval -> interval.belongsTo(group))
 			.collect(toList());
 	}
 
 	public List<TokenInterval> getCovered(String group) {
-		List<TemplateExpression> covered = coverableByGroup.get(group).stream()
-			.filter(expr -> coverage.containsKey(expr))
-			.collect(toList());
-
-		Map<Integer, Token> tokens = tokens(covered);
-		IntervalSet intervals = intervals(covered);
-
-		return intervals.getIntervals().stream()
-			.map(interval -> new TokenInterval(interval, tokens.get(interval.a), tokens.get(interval.b)))
+		return covered.stream()
+			.filter(interval -> interval.belongsTo(group))
 			.collect(toList());
 	}
 
 	public Map<Integer, Token> tokens(List<TemplateExpression> expressions) {
 		return expressions.stream()
-			.map(expr -> locations.get(expr))
+			.flatMap(expr -> locations.get(expr).stream())
 			.filter(Objects::nonNull)
 			.flatMap(tokenInterval -> Stream.of(tokenInterval.getStart(), tokenInterval.getStop()))
 			.distinct()
@@ -106,14 +94,10 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 
 	public IntervalSet intervals(List<TemplateExpression> expressions) {
 		return expressions.stream()
-			.map(expr -> locations.get(expr))
+			.flatMap(expr -> locations.get(expr).stream())
 			.filter(Objects::nonNull)
 			.map(tokenInterval -> tokenInterval.getInterval())
 			.collect(IntervalSet::new, (intervals, interval) -> intervals.add(interval.a, interval.b), (interval1, interval2) -> interval1.addAll(interval2));
-	}
-
-	public Set<String> getGroupsInScope() {
-		return coverableByGroup.keySet();
 	}
 
 	@Override
@@ -134,25 +118,20 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 
 	@Override
 	public void notify(TemplateExpression source, TemplateImmediateExpression result) {
-		coverage.put(source, true);
-	}
-
-	private BiFunction<String, Set<TemplateExpression>, Set<TemplateExpression>> mergeCoverage(TemplateExpression expr) {
-		return (group, existing) -> {
-			if (existing == null) {
-				return Stream.of(expr)
-					.collect(toSet());
-			} else {
-				return Stream.concat(existing.stream(), Stream.of(expr))
-					.collect(toSet());
-			}
-		};
+		Set<TokenInterval> covered = locations.computeIfAbsent(source, exp -> new LinkedHashSet<>());
+		
+		covered.removeAll(this.covered);
+		
+		this.uncovered.removeAll(covered);
+		
+		this.covered.addAll(covered);
 	}
 
 	private class CoverageBuilder extends TemplateGroupBuilder {
 
 		public CoverageBuilder(String name, String resource, TemplateLoader loader) throws IOException {
 			super(name, resource, loader);
+			groups.add(name);
 		}
 
 		public TemplateGroupNode visit(ParseTree tree) {
@@ -161,8 +140,11 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 			if (isCoverableExpression(expression) && tree instanceof ParserRuleContext) {
 				ParserRuleContext ruleContext = (ParserRuleContext) tree;
 				Interval coverage = ruleContext.getSourceInterval();
-				coverableByGroup.compute(getName(), mergeCoverage(expression));
-				locations.put(expression, new TokenInterval(coverage, ruleContext.start, ruleContext.stop));
+				TokenInterval interval = new TokenInterval(getName(), coverage, ruleContext.start, ruleContext.stop);
+				if (!covered.contains(interval)) {
+					uncovered.add(interval);
+				}
+				locations.computeIfAbsent(expression, exp -> new LinkedHashSet<>()).add(interval);
 			}
 			return result;
 		}
