@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 import net.amygdalum.comtemplate.engine.Scope;
 import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
 import net.amygdalum.ctp.unit.Status;
-import net.amygdalum.ctp.unit.matchers.EqNoWhitespaceMatcher;
 
 
 public class EqNoWhitespaceMatcherTest {

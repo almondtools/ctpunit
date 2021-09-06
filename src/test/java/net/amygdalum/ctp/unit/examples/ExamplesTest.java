@@ -7,8 +7,8 @@ import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import net.amygdalum.ctp.unit.CtpUnitExtension;
-import net.amygdalum.ctp.unit.CtpUnitTestSuite;
 import net.amygdalum.ctp.unit.CtpUnitExtension.Spec;
+import net.amygdalum.ctp.unit.CtpUnitTestSuite;
 
 @ExtendWith(CtpUnitExtension.class)
 public class ExamplesTest {

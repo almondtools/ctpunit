@@ -26,7 +26,6 @@ import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
 import net.amygdalum.comtemplate.engine.expressions.NativeObject;
 import net.amygdalum.comtemplate.engine.expressions.ResolvedMapLiteral;
 import net.amygdalum.ctp.unit.Status;
-import net.amygdalum.ctp.unit.matchers.FailsMatcher;
 
 
 public class FailsMatcherTest {
