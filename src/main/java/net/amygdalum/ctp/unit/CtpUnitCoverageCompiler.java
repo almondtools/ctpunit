@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import net.amygdalum.comtemplate.engine.InterpreterListener;
+import net.amygdalum.comtemplate.engine.Scope;
 import net.amygdalum.comtemplate.engine.TemplateCompiler;
 import net.amygdalum.comtemplate.engine.TemplateDefinition;
 import net.amygdalum.comtemplate.engine.TemplateExpression;
@@ -117,7 +118,7 @@ public class CtpUnitCoverageCompiler implements TemplateCompiler, InterpreterLis
 	}
 
 	@Override
-	public void notify(TemplateExpression source, TemplateImmediateExpression result) {
+	public void notify(Scope scope, TemplateExpression source, TemplateImmediateExpression result) {
 		Set<TokenInterval> covered = locations.computeIfAbsent(source, exp -> new LinkedHashSet<>());
 		
 		covered.removeAll(this.covered);

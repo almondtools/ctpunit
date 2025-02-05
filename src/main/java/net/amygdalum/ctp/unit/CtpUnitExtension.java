@@ -24,7 +24,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 import net.amygdalum.comtemplate.engine.ConfigurableTemplateLoader;
 import net.amygdalum.comtemplate.engine.DefaultErrorHandler;
-import net.amygdalum.comtemplate.engine.TemplateEventNotifier;
+import net.amygdalum.comtemplate.engine.DefaultTemplateInterpreter;
 import net.amygdalum.comtemplate.engine.TemplateGroup;
 import net.amygdalum.comtemplate.engine.TemplateInterpreter;
 import net.amygdalum.comtemplate.engine.TemplateLoader;
@@ -36,7 +36,7 @@ public class CtpUnitExtension implements BeforeEachCallback, ParameterResolver {
 	private String src;
 	private List<String> modules;
 	private TemplateLoader loader;
-	private TemplateEventNotifier interpreter;
+	private DefaultTemplateInterpreter interpreter;
 
 
 	@Override
@@ -47,7 +47,7 @@ public class CtpUnitExtension implements BeforeEachCallback, ParameterResolver {
 		loader = new ConfigurableTemplateLoader(compiler.get())
 			.withSource(Paths.get(src))
 			.withClasspath(true);
-		interpreter = new TemplateEventNotifier(loader, defaultRegistry(), defaultTemplates(), new DefaultErrorHandler());
+		interpreter = new DefaultTemplateInterpreter(loader, defaultRegistry(), defaultTemplates(), new DefaultErrorHandler());
 		interpreter.addListener(compiler.get());
 	}
 
