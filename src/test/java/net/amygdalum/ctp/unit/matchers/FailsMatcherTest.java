@@ -13,7 +13,7 @@ import static net.amygdalum.ctp.unit.Status.SUCCESS;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +26,6 @@ import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
 import net.amygdalum.comtemplate.engine.expressions.NativeObject;
 import net.amygdalum.comtemplate.engine.expressions.ResolvedMapLiteral;
 import net.amygdalum.ctp.unit.Status;
-
 
 public class FailsMatcherTest {
 
@@ -49,7 +48,7 @@ public class FailsMatcherTest {
 	public void testFailure() throws Exception {
 		Scope scope = mock(Scope.class);
 		ResolvedMapLiteral success = new ResolvedMapLiteral(var("status", new NativeObject(SUCCESS)));
-		
+
 		assertThat(matcher.resolveResult(success, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(FAILURE));
 		assertThat(matcher.resolveResult(success, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("expecting failing assertion but was success"));
 	}
@@ -57,7 +56,7 @@ public class FailsMatcherTest {
 	@Test
 	public void testPassThroughIgnore() throws Exception {
 		Scope scope = mock(Scope.class);
-		ResolvedMapLiteral ignore = new ResolvedMapLiteral(var("status", new NativeObject(IGNORE)), var("message",string("ignore message")));
+		ResolvedMapLiteral ignore = new ResolvedMapLiteral(var("status", new NativeObject(IGNORE)), var("message", string("ignore message")));
 
 		assertThat(matcher.resolveResult(ignore, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(IGNORE));
 		assertThat(matcher.resolveResult(ignore, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("ignore message"));
@@ -66,19 +65,19 @@ public class FailsMatcherTest {
 	@Test
 	public void testPassThroughError() throws Exception {
 		Scope scope = mock(Scope.class);
-		ResolvedMapLiteral ignore = new ResolvedMapLiteral(var("status", new NativeObject(ERROR)), var("message",string("error message")));
-		
+		ResolvedMapLiteral ignore = new ResolvedMapLiteral(var("status", new NativeObject(ERROR)), var("message", string("error message")));
+
 		assertThat(matcher.resolveResult(ignore, emptyList(), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
 		assertThat(matcher.resolveResult(ignore, emptyList(), scope).getAttribute(MESSAGE).as(String.class), equalTo("error message"));
 	}
-	
+
 	@Test
 	public void testError() throws Exception {
 		Scope scope = mock(Scope.class);
 		TemplateImmediateExpression broken = Mockito.mock(TemplateImmediateExpression.class);
 		when(broken.getText()).thenThrow(RuntimeException.class);
-		
-		assertThat(matcher.resolveResult(broken , asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
+
+		assertThat(matcher.resolveResult(broken, asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
 		assertThat(matcher.resolveResult(broken, asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), containsString("ClassCastException"));
 	}
 

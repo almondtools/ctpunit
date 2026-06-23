@@ -10,7 +10,7 @@ import static net.amygdalum.ctp.unit.Status.SUCCESS;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 import net.amygdalum.comtemplate.engine.Scope;
 import net.amygdalum.comtemplate.engine.TemplateImmediateExpression;
 import net.amygdalum.ctp.unit.Status;
-
 
 public class EqNoWhitespaceMatcherTest {
 
@@ -60,8 +59,8 @@ public class EqNoWhitespaceMatcherTest {
 		Scope scope = mock(Scope.class);
 		TemplateImmediateExpression broken = Mockito.mock(TemplateImmediateExpression.class);
 		when(broken.getText()).thenThrow(RuntimeException.class);
-		
-		assertThat(matcher.resolveResult(broken , asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
+
+		assertThat(matcher.resolveResult(broken, asList(string("xyz")), scope).getAttribute(STATUS).as(Status.class), is(ERROR));
 		assertThat(matcher.resolveResult(broken, asList(string("xyz")), scope).getAttribute(MESSAGE).as(String.class), containsString("RuntimeException"));
 	}
 
